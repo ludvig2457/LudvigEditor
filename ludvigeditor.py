@@ -4867,6 +4867,54 @@ Modified: {mtime}
 def main():
     app = QApplication(sys.argv)
     
+    # ЗАГРУЗКА ИКОНКИ ПРИЛОЖЕНИЯ
+    # Сначала пробуем загрузить иконку из текущей папки
+    icon_path = "LudvigEditor.png"
+    
+    # Если не нашли в текущей папке, пробуем рядом с исполняемым файлом
+    if not os.path.exists(icon_path):
+        # Получаем директорию, где находится скрипт
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        icon_path = os.path.join(script_dir, "LudvigEditor.png")
+    
+    # Пробуем загрузить PNG
+    if os.path.exists(icon_path):
+        try:
+            app.setWindowIcon(QIcon(icon_path))
+            print(f"✅ Иконка загружена: {icon_path}")
+        except Exception as e:
+            print(f"❌ Ошибка загрузки PNG иконки: {e}")
+            # Пробуем альтернативные форматы
+            icon_path_ico = icon_path.replace('.png', '.ico')
+            if os.path.exists(icon_path_ico):
+                try:
+                    app.setWindowIcon(QIcon(icon_path_ico))
+                    print(f"✅ Загружена ICO иконка: {icon_path_ico}")
+                except Exception as e2:
+                    print(f"❌ Ошибка загрузки ICO иконки: {e2}")
+    else:
+        # Пробуем другие возможные пути
+        alt_paths = [
+            "icon.png",
+            "icon.ico",
+            "LudvigEditor.ico",
+            os.path.join(os.path.expanduser("~"), "LudvigEditor.png"),
+            os.path.join(os.getcwd(), "LudvigEditor.png")
+        ]
+        
+        for alt_path in alt_paths:
+            if os.path.exists(alt_path):
+                try:
+                    app.setWindowIcon(QIcon(alt_path))
+                    print(f"✅ Альтернативная иконка загружена: {alt_path}")
+                    break
+                except Exception as e:
+                    continue
+        
+        # Если вообще не нашли иконку
+        if app.windowIcon().isNull():
+            print("⚠️ Иконка не найдена, используется стандартная")
+    
     # Настройка стиля приложения
     app.setStyle("Fusion")
     
